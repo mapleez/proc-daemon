@@ -1,21 +1,27 @@
 #!/usr/bin/perl
 
-use strict;
-use warnings;
-use POSIX;
-
-#
+#############################################################
 # Author : ez
 # Date : 2017/1/6
 # Description : Daemon processes through configuration file.
-# 
+############################################################# 
+
+use strict;
+use warnings;
+use POSIX();
+
+
+# Release version at 2017-1-7
+$::VERSION = '0.0.8';
 
 # configuration file for all daemoned processes.
 my $CONFFILE = "proc.conf";
 
 # log file.
-my $STDOUT_FILE = "logs.log";
-my $STDERR_FILE = "err.log";
+my $STDOUT_FILE = "logs/out.log";
+my $STDERR_FILE = "logs/err.log";
+
+my $PWD = ".";
 
 # pid file of daemon process.
 my $PIDFILE = "pid";
@@ -30,6 +36,7 @@ my $PROC_NUM = 0;
 # Functions #
 #############
 
+# parse configuration.
 sub parse_procs {
 	open CONF, $CONFFILE
 		or die "Error in openning $CONFFILE: $!\n";
@@ -46,15 +53,32 @@ sub parse_procs {
 	close CONF;
 }
 
-sub daemonlize {
+# daemonize this process.
+sub daemonize {
+	# Fork a child.
 	defined (my $pid = fork) 
 		or die "Fork daemon error: $!\n";
-	exit 0 if $pid;
+	
+	# Exit parent process.
+	exit 0 if $pid; 
 
-	POSIX::setpid ();
-	open OUTFD, '>&', $STDOUT_FILE;
+	# Detach the child from the terminal 
+	# (No controlling tty). make it the 
+	# session-leader and the process-group-leader
+	# of a new process group.
+	die "Cannot detach from controlling terminal: $!\n"
+		if &POSIX::setsid () < 0;
 
-	close STDIN;
+	# chdir to $PWD.
+	die "Can't chdir to $PWD: $!\n" unless chdir $PWD;
+
+	# Redirect stdout and stderr.
+	open STDOUT, '>+', $STDOUT_FILE;
+	if ($STDOUT_FILE eq $STDERR_FILE) {
+		open STDERR, '>&', STDOUT;
+	} else {
+		open STDERR, '>+', $STDERR_FILE;
+	}
 }
 
 sub handle_crashed_proc {
@@ -74,15 +98,19 @@ sub check_one_proc {
 
 	print "[$time]Starting check $proc_name process...\n";
 	if (`jps | grep $proc_name | cut -d " " -f 2` eq "") {
+		unless (defined $proc_bin) {
+			print "Restart executing script is empty!!!\n";
+			return;
+		}
 		&handle_crashed_proc ($proc_name, $proc_bin);
 	} else {
 		print "Process $proc_name is OK!\n";
 	}
 }
 
-
 sub check_cmd_existing {
  my ($env, $cmd) = ($ENV {'PATH'}, shift);
+ return 1 if ( -r $cmd );
  my @path = split /:/, $env;
  foreach my $p (@path) {
  	if ( -r $p ) {
@@ -105,10 +133,13 @@ if ( -r $PIDFILE ) {
 	exit 0;
 }
 
+# &daemonize;
+
 # parse
 &parse_procs;
-&daemonlize;
 
+
+# Start loop
 while (1) {
 	foreach my $p (@PROCS) {
 		chomp $p;
@@ -120,4 +151,52 @@ while (1) {
 }
 
 __END__
+
+=head1 daemonize
+
+Make the process to be a daemon process.
+
+=head1 handle_crashed_proc
+
+If a process being daemoned is crashed, we restart it.
+
+=over 2
+
+=item 1
+
+Process name being parsed by config file.
+
+=item 2
+
+Process boot script for restarting operation.
+
+=back
+
+=head1 check_one_proc
+
+Check a process is running or not at the time.
+
+=over 2
+
+=item 1
+
+Process name being parsed by config file.
+
+=item 2
+
+Process boot script for restarting operation.
+
+=back
+
+=head1 check_cmd_existing
+
+Check the OS environment and find the command is existing for booting process.
+
+=over
+
+=item 1
+
+Shell command to restart process while crashed.
+
+=back
 
