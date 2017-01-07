@@ -73,11 +73,11 @@ sub daemonize {
 	die "Can't chdir to $PWD: $!\n" unless chdir $PWD;
 
 	# Redirect stdout and stderr.
-	open STDOUT, '>+', $STDOUT_FILE;
+	open STDOUT, '+>', $STDOUT_FILE;
 	if ($STDOUT_FILE eq $STDERR_FILE) {
 		open STDERR, '>&', STDOUT;
 	} else {
-		open STDERR, '>+', $STDERR_FILE;
+		open STDERR, '+>', $STDERR_FILE;
 	}
 }
 
@@ -85,11 +85,16 @@ sub handle_crashed_proc {
 	my ($proc_name, $proc_bin) = @_;
 	print "Restart crashed proc $proc_name...";
 	if ($proc_bin ne "" && &check_cmd_existing ($proc_bin)) {
-		`$proc_bin`;
+		# `$proc_bin`;
 		print "Done!\n";
 	} else {	
 		print "\nError restarting proc $proc_name. Ensure executing script $proc_bin is existing and readable. Nothing will be done.\n";
 	}
+}
+
+sub find_proc {
+	my $proc_name = shift;
+	!! scalar `ps -e | grep $proc_name`;
 }
 
 sub check_one_proc {
@@ -97,7 +102,8 @@ sub check_one_proc {
 	chomp (my $time = `date`);
 
 	print "[$time]Starting check $proc_name process...\n";
-	if (`jps | grep $proc_name | cut -d " " -f 2` eq "") {
+	unless (`jps | grep $proc_name | cut -d " " -f 2` ne "" || 
+			&find_proc ($proc_name)) {
 		unless (defined $proc_bin) {
 			print "Restart executing script is empty!!!\n";
 			return;
