@@ -24,7 +24,7 @@ my $STDERR_FILE = "logs/err.log";
 my $PWD = ".";
 
 # pid file of daemon process.
-my $PIDFILE = "pid";
+my $PIDFILE = "data/daemon.pid";
 
 # second.
 my $INTERVAL = 5 ;
@@ -81,11 +81,20 @@ sub daemonize {
 	}
 }
 
+sub check_daemon_proc_file {
+	if ( -r $PIDFILE ) {
+		my $PID = `cat $PIDFILE`;
+		print "Daemon process has been running at the time with pid $PID, kill it first.\n";
+		exit 0;
+	}
+}
+
 sub handle_crashed_proc {
 	my ($proc_name, $proc_bin) = @_;
 	print "Restart crashed proc $proc_name...";
 	if ($proc_bin ne "" && &check_cmd_existing ($proc_bin)) {
-		# `$proc_bin`;
+		# Note: We just reboot service process.
+		`$proc_bin`;
 		print "Done!\n";
 	} else {	
 		print "\nError restarting proc $proc_name. Ensure executing script $proc_bin is existing and readable. Nothing will be done.\n";
@@ -132,14 +141,10 @@ sub check_cmd_existing {
 # Main process.   #
 ###################
 
-# check daemon singleton
-if ( -r $PIDFILE ) {
-	my $PID = `cat $PIDFILE`;
-	print "Daemon process has been running at the time with pid $PID, kill it first.\n";
-	exit 0;
-}
+# check
+&check_daemon_proc_file;
 
-# &daemonize;
+&daemonize;
 
 # parse
 &parse_procs;
