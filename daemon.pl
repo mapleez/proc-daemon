@@ -8,26 +8,34 @@
 
 use strict;
 use warnings;
+
+use Config::Tiny;
 use POSIX();
 
+####################
+# Configuration    #
+####################
+
+my $conf_hdl = Config::Tiny -> new;
+$conf_hdl = Config::Tiny -> read ("conf/daemon.conf");
 
 # Release version at 2017-1-7
-$::VERSION = '0.0.8';
+$::VERSION = $$conf_hdl {_} {version};
 
 # configuration file for all daemoned processes.
-my $CONFFILE = "proc.conf";
+my $CONFFILE = $$conf_hdl {_} {proc_conf};
 
 # log file.
-my $STDOUT_FILE = "logs/out.log";
-my $STDERR_FILE = "logs/err.log";
-
-my $PWD = ".";
+my $STDOUT_FILE = $$conf_hdl {_} {stdout_file};
+my $STDERR_FILE = $$conf_hdl {_} {stderr_file};
 
 # pid file of daemon process.
-my $PIDFILE = "data/daemon.pid";
+my $PIDFILE = $$conf_hdl {_} {pid_file};
 
-# second.
-my $INTERVAL = 5 ;
+# interval seconds
+my $INTERVAL = $$conf_hdl {_} {interval};
+
+my $PWD = ".";
 
 my @PROCS = ();
 my $PROC_NUM = 0;
@@ -144,7 +152,7 @@ sub check_cmd_existing {
 # check
 &check_daemon_proc_file;
 
-&daemonize;
+# &daemonize;
 
 # parse
 &parse_procs;
