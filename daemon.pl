@@ -49,7 +49,10 @@ sub parse_procs {
 	open CONF, $CONFFILE
 		or die "Error in openning $CONFFILE: $!\n";
 
-	@PROCS = <CONF>;
+	while (<CONF>) {
+		push @PROCS, $_
+			unless ($_ =~ /^(#+|\s+)/)
+	}
 	$PROC_NUM = @PROCS;
 
 	if ($PROC_NUM == 0) {
@@ -150,24 +153,26 @@ sub check_cmd_existing {
 ###################
 
 # check
-&check_daemon_proc_file;
+# &check_daemon_proc_file;
 
 # &daemonize;
 
 # parse
 &parse_procs;
 
+print "@PROCS", ", $PROC_NUM\n";
+
 
 # Start loop
-while (1) {
-	foreach my $p (@PROCS) {
-		chomp $p;
-		my ($name, $bin) = split " ", $p;
-		&check_one_proc ($name, $bin);
-	}
-	sleep $INTERVAL;
-	print "\n";
-}
+# while (1) {
+# 	foreach my $p (@PROCS) {
+# 		chomp $p;
+# 		my ($name, $bin) = split " ", $p;
+# 		&check_one_proc ($name, $bin);
+# 	}
+# 	sleep $INTERVAL;
+# 	print "\n";
+# }
 
 __END__
 
