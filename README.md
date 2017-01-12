@@ -1,5 +1,4 @@
 # proc-daemon
----
 
 ***proc-daemon*** is a daemon process written by perl. And is used to monitor server-side daemon programms. We use as simple as possible configurable interface for user. At this version **0.0.8** we juse check whether the configured programs is running normally, with process name and pid. Maybe some new usable features shell be added.
 
@@ -31,9 +30,9 @@ Now this version only depends on perl module `Config::Tiny`. And we've added int
 We've tested it on **Ubuntu desktop 16.04** and **CentOS 7**.
 
 ### Author info
-ez's CSDN blog [http://blog.csdn.net/u012842205](http://blog.csdn.net/u012842205)
-ez's Tencent Email [1786428321@qq.com](1786428321@qq.com)
-ez's 126 Email [kukunanhai_5207@126.com](kukunanhai_5207@126.com)
+* ez's CSDN blog [http://blog.csdn.net/u012842205](http://blog.csdn.net/u012842205)
+* ez's Tencent Email [1786428321@qq.com](1786428321@qq.com)
+* ez's 126 Email [kukunanhai_5207@126.com](kukunanhai_5207@126.com)
 
 ***Enjoy it :)***
 
