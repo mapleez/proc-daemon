@@ -31,8 +31,8 @@ We've tested it on **Ubuntu desktop 16.04** and **CentOS 7**.
 
 ### Author info
 * ez's CSDN blog [http://blog.csdn.net/u012842205](http://blog.csdn.net/u012842205)
-* ez's Tencent Email [1786428321@qq.com](1786428321@qq.com)
-* ez's 126 Email [kukunanhai_5207@126.com](kukunanhai_5207@126.com)
+* ez's Tencent Email [1786428321@qq.com](mailto://1786428321@qq.com)
+* ez's 126 Email [kukunanhai_5207@126.com](mailto://kukunanhai_5207@126.com)
 
 ***Enjoy it :)***
 
