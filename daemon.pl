@@ -20,7 +20,7 @@ my $conf_hdl = Config::Tiny -> new;
 $conf_hdl = Config::Tiny -> read ("conf/daemon.conf");
 
 # Release version at 2017-1-7
-$::VERSION = $$conf_hdl {_} {version};
+$::VERSION = '0.8.0'
 
 # configuration file for all daemoned processes.
 my $CONFFILE = $$conf_hdl {_} {proc_conf};

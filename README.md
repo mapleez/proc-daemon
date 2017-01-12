@@ -25,6 +25,15 @@ RedisConsumer    /home/redisusr/RedisConsumer2.3.4/start.sh
 
 # TestDaemon     /opt/test/daemon.sh
 ```
+
+### Usage
+When you finished configuring, it's time to run ***proc-daemon***.
+```markdown
+perl daemon.pl
+```
+And when you wanna kill it. You shell use `ps -e` and find the perl process, kill it ;) . We'll improve it in the future.
+
+
 ### Dependency and Environment
 Now this version only depends on perl module `Config::Tiny`. And we've added into dep/. 
 We've tested it on **Ubuntu desktop 16.04** and **CentOS 7**.
