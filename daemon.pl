@@ -20,7 +20,7 @@ my $conf_hdl = Config::Tiny -> new;
 $conf_hdl = Config::Tiny -> read ("conf/daemon.conf");
 
 # Release version at 2017-1-7
-$::VERSION = '0.8.0'
+$::VERSION = '0.8.0';
 
 # configuration file for all daemoned processes.
 my $CONFFILE = $$conf_hdl {_} {proc_conf};
@@ -153,26 +153,24 @@ sub check_cmd_existing {
 ###################
 
 # check
-# &check_daemon_proc_file;
+&check_daemon_proc_file;
 
-# &daemonize;
+&daemonize;
 
 # parse
 &parse_procs;
 
-print "@PROCS", ", $PROC_NUM\n";
-
 
 # Start loop
-# while (1) {
-# 	foreach my $p (@PROCS) {
-# 		chomp $p;
-# 		my ($name, $bin) = split " ", $p;
-# 		&check_one_proc ($name, $bin);
-# 	}
-# 	sleep $INTERVAL;
-# 	print "\n";
-# }
+while (1) {
+	foreach my $p (@PROCS) {
+		chomp $p;
+		my ($name, $bin) = split " ", $p;
+		&check_one_proc ($name, $bin);
+	}
+	sleep $INTERVAL;
+	print "\n";
+}
 
 __END__
 
